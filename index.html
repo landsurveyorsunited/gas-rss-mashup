@@ -1,0 +1,17 @@
+<?!= include('stylesheet'); ?>
+
+<ul>
+    <? var months = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'];
+       var currentDay = "";
+       for (var i = 0; i < data.length; i++) {
+       var day = data[i].day + data[i].month + data[i].year;
+       if (currentDay != day) {
+        currentDay = day; ?>
+        <li class="date-header"><?= data[i].day + " " + months[data[i].month] + " " + data[i].year ?></li>
+    <?  } ?>
+    <li>
+    	<font size="3"><?= data[i].title ?>&nbsp;<a href="<?= data[i].link ?>" rel="nofollow" target="_blank">more...</a></font>
+    </li>
+    <? } ?>
+</ul>
