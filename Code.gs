@@ -10,12 +10,19 @@ function include(filename) {
 }
 
 function update() {
-  urls = ["http://www.howtoforge.com/node/feed", "http://www.osnews.com/files/recent.xml", 
-          "http://www.webupd8.org/feeds/posts/default", "http://linuxtoday.com/backend/biglt.rss", 
-          "http://www.linuxjournal.com/node/feed", "http://feeds.feedburner.com/d0od",
-          "http://www.ubuntugeek.com/feed/", "http://rss.slashdot.org/Slashdot/slashdotLinux"];
+  urls = ["http://www.howtoforge.com/node/feed", 
+          "http://www.osnews.com/files/recent.xml", 
+          "http://www.webupd8.org/feeds/posts/default", 
+          "http://linuxtoday.com/backend/biglt.rss",
+          "http://www.linuxjournal.com/node/feed", 
+          "http://feeds.feedburner.com/d0od",
+          "http://www.ubuntugeek.com/feed/", 
+          "http://rss.slashdot.org/Slashdot/slashdotLinux"];
   for (i = 0; i<urls.length; i++) {
-    saveFeed_(urls[i]);
+    try {
+      saveFeed_(urls[i]);    
+    } catch (ex) {
+    }
   }
 }
 
@@ -35,27 +42,20 @@ function saveFeed_(url) {
 
 function getFeedFrom_(url) {
   var result = UrlFetchApp.fetch(url);
-  var items = [];
-  if (result.getResponseCode() == 200) {
-    var feed = result.getContentText();
-    var doc = Xml.parse(feed, false);  
-    items = doc.getElement().getElement("channel").getElements("item");
-  }
+  var feed = result.getContentText();
+  var doc = Xml.parse(feed, false);  
+  var items = doc.getElement().getElement("channel").getElements("item");
   return items;
 }
 
 function getItems_(url, items) {
   var parsedItems = [];
   for (var i = 0; i < items.length; i++) {
-    var utc = new Date(items[i].getElement("pubDate").getText()).toUTCString();
-    var utcDate = new Date(utc);
+    var utc = new Date(items[i].getElement("pubDate").getText());
     var item = {
       title: items[i].getElement("title").getText(),
       link: items[i].getElement("link").getText(),
-      day: utcDate.getUTCDate(),
-      month: utcDate.getUTCMonth(),
-      year: utcDate.getUTCFullYear(),
-      timestamp: utcDate.getTime(),
+      timestamp: utc.getTime().toString(),
       source: url
     };
     parsedItems.push(item);
