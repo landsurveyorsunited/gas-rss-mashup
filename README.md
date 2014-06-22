@@ -11,15 +11,16 @@ function doGet() {...}
 function update() {...}
 ```
 
-The first returns the saved content from the ScriptDb that will be displayed on your website.
+The first returns the saved content from the ~~ScriptDb~~ MongoDb (at [Mongolab] via remote API) that will be displayed on your website.
 
-The second fetches and parses the feeds and save the result on the ScriptDb. This method needs to be time-driven triggered (e.g. to run every 2 hours). That can be done easily from your Google's script editor page as suggested [at this page].
+The second fetches and parses the feeds and saves the result on the ~~ScriptDb~~ MongoDb. This method needs to be time-driven triggered (e.g. to run every 2 hours). That can be done easily from your Google's script editor page as suggested [at this page].
 
-Before to continue, please visit the sample website running this script [here].
+Before continuing, please visit the sample website running this script [here].
 
 To include the script in your site follow [these instructions]. 
 
 [here]:http://sites.google.com/site/thedailylinux/
 [these instructions]:http://developers.google.com/apps-script/execution_gadgets#embedding
 [at this page]:http://developers.google.com/apps-script/understanding_triggers#TimeTriggers
+[Mongolab]:http://mongolab.com/
 
