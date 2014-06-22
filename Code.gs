@@ -10,14 +10,26 @@ function include(filename) {
 }
 
 function update() {
-  urls = ["http://www.howtoforge.com/node/feed", 
-          "http://www.osnews.com/files/recent.xml", 
-          "http://www.webupd8.org/feeds/posts/default", 
+  urls = ["http://www.osnews.com/files/recent.xml",
+          "http://lwn.net/headlines/newrss",
+          "http://fullcirclemagazine.org/feed/",
+          "http://www.raspberrypi.org/feed",
+          "http://www.linuxjournal.com/node/feed",
+          "http://www.linux.com/rss/feeds.php",
+          "http://feeds.feedburner.com/TheGeekStuff",
+          "http://www.howtoforge.com/node/feed",
+          "http://www.webupd8.org/feeds/posts/default",
+          "http://feeds.cyberciti.biz/Nixcraft-LinuxFreebsdSolarisTipsTricks",
+          "http://planet.ubuntulinux.org/rss20.xml",
+          "http://www.archlinux.org/feeds/news/",
           "http://linuxtoday.com/backend/biglt.rss",
-          "http://www.linuxjournal.com/node/feed", 
+          "http://distrowatch.com/news/dw.xml",
           "http://feeds.feedburner.com/d0od",
-          "http://www.ubuntugeek.com/feed/", 
-          "http://rss.slashdot.org/Slashdot/slashdotLinux"];
+          "http://feeds.feedburner.com/Phoronix",
+          "http://www.linuxinsider.com/perl/syndication/rssfull.pl",
+          "http://rss.slashdot.org/Slashdot/slashdotLinux",
+          "http://www.ubuntugeek.com/feed/",
+          "http://feeds2.feedburner.com/Command-line-fu"];
   for (i = 0; i<urls.length; i++) {
     try {
       saveFeed_(urls[i]);    
@@ -28,10 +40,9 @@ function update() {
 
 function loadSortedFeeds_() {
   var items = [];
-  var db = ScriptDb.getMyDb();
-  var result = db.query({}).sortBy('timestamp', db.DESCENDING);
-  while (result.hasNext()) {
-    items.push(result.next());
+  var result = findItemsBySource_();
+  for (i = 0; i<result.length; i++) {
+    items.push(result[i]);
   }
   return items;
 }
@@ -65,12 +76,28 @@ function getItems_(url, items) {
 
 function saveItems_(url, items) {
   if (items.length > 0) {
-    var db = ScriptDb.getMyDb();
-    var result = db.query({source: url});
-    while (result.hasNext()) {
-      var item = result.next()
-      db.remove(item);
-    }
-    result = db.saveBatch(items, false);
+    saveItemsBySource_(url, items);    
   }  
+}
+
+function saveItemsBySource_(source, items) {
+  var payload = JSON.stringify(items);
+  var options =
+   {
+     "payload": payload,
+     "method": "PUT",
+	 "contentType": "application/json"
+   };
+  var query = "q=%7B%22source%22: %22" + source + "%22%7D";
+  UrlFetchApp.fetch(authUrl_(query), options);
+}
+
+function findItemsBySource_() {
+  var query = "s=%7B%22timestamp%22: -1%7D&limit=100000";
+  var result = UrlFetchApp.fetch(authUrl_(query));
+  return JSON.parse(result.getContentText());
+}
+
+function authUrl_(query) {
+  return "https://api.mongolab.com/api/1/databases/linux/collections/thedailylinux?" + query + "&apiKey=<your-apikey-from-mongolab>";
 }
